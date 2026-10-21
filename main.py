@@ -11,6 +11,7 @@ def main():
         return
 
     while True:
+        print("欢迎使用任务管理器！")
         print("\n===== 任务管理器 =====")
         print("1. 查看任务")
         print("2. 添加任务")
