@@ -1,5 +1,5 @@
 from storage import load_tasks, save_tasks
-from tasks_ser import add_task, list_tasks, complete_task, delete_task
+from tasks_ser import add_task, list_tasks, complete_task, delete_task,edit_task
 
 
 def main():
@@ -17,6 +17,7 @@ def main():
         print("2. 添加任务")
         print("3. 完成任务")
         print("4. 删除任务")
+        print("5. 编辑任务")
         print("0. 退出程序")
 
         choice = input("请输入选项：").strip()
@@ -69,6 +70,28 @@ def main():
             if result:
                 save_tasks(tasks)
                 print("任务删除成功")
+            else:
+                print("未找到该任务")
+        # 编辑任务
+        elif choice == "5":
+            
+            try:
+                task_id = int(input("请输入要编辑的任务 ID："))
+            except ValueError:
+                print("ID 必须是整数")
+                continue
+
+            new_title = input("请输入新的任务名称：").strip()
+
+            if not new_title:
+                print("任务名称不能为空")
+                continue
+
+            result = edit_task(tasks, task_id, new_title)
+
+            if result:
+                save_tasks(tasks)
+                print("任务编辑成功")
             else:
                 print("未找到该任务")
 

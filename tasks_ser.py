@@ -50,9 +50,22 @@ def complete_task(tasks, task_id):
 
 # 6. 删除任务
 def delete_task(tasks, task_id):
+
+
     for task in tasks:
         if task["id"] == task_id:
             tasks.remove(task)
             return True
 
+    return False
+
+def edit_task(tasks, task_id, new_title):
+    
+    for task in tasks:
+        
+        if task["id"] == task_id:
+            
+            task["title"] = new_title                                       
+            return True
+    
     return False
