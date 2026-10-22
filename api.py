@@ -2,12 +2,14 @@ from fastapi import FastAPI
 import tasks_ser
 import storage
 from pydantic import BaseModel
+import ai_service 
 
 
 app = FastAPI()
 class TaskCreate(BaseModel):
     title: str
-
+class AIPrompt(BaseModel):
+    prompt: str
 
 @app.get("/")
 async def read_root():
@@ -63,4 +65,22 @@ def delete_task_api(task_id: int):  # 只接收 task_id，不要 TaskCreate
         return {"message": f"任务 {task_id} 删除成功"}
     else:
         return {"message": "未找到该任务"}
+
+@app.post("/tasks/ai")
+def create_task_with_ai(request: AIPrompt):  # 接收 JSON 模型
+    title = ai_service.extract_task_from_ai(request.prompt) # 从模型里取 prompt
+    
+    if title is None:
+        return {"status": "error", "message": "AI 服务连接失败，请检查 Ollama 是否启动"}
+    if title == "":
+        return {"status": "failed", "message": "AI 没听懂你想加什么任务"}
+        
+    tasks = storage.load_tasks()
+    if tasks is None:
+        tasks = []
+        
+    tasks_ser.add_task(tasks, title)
+    storage.save_tasks(tasks)
+    
+    return {"status": "success", "message": f"AI 帮你成功添加了任务：{title}"}
 
