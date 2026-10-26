@@ -2,3 +2,4 @@ __pycache__/
 *.py[cod]
 tasks.json
 .venv/
+tasks.db

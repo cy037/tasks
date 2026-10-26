@@ -15,7 +15,7 @@ def load_tasks():
         with open(file_path, "r", encoding="utf-8") as f:
             return json.load(f)
     except json.JSONDecodeError:
-        print("错误：tasks.json 文件格式损坏，请检查文件后再运行。")
+        print("错误:tasks.json 文件格式损坏，请检查文件后再运行。")
         return None
 
 
