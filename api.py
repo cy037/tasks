@@ -146,10 +146,8 @@ def remove_task(task_id: int):
 def complete_task(task_id: int):
     """将任务标记为完成。"""
     try:
-        success = tasks_ser.update_task(
-            task_id=task_id,
-            new_status="done"
-        )
+        success = tasks_ser.complete_task(task_id)
+        
 
         if not success:
             raise HTTPException(

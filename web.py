@@ -73,6 +73,28 @@ try:
                     st.write(f"**创建时间:** {task.get('created_at')}")
                     st.markdown("**细节与规划:**")
                     st.info(task.get("details") or "暂无细节")
+                    st.divider()
+                    col1,col2 = st.columns(2)
+
+                    with col1:
+
+                        if status != "done" :
+                           if st.button("✅ 标记完成", key=f"done_{task['id']}"):
+                               patch_res = requests.patch(f"{API_BASE}/tasks/{task['id']}/complete")
+
+                               if patch_res.status_code == 200:
+                                   st.rerun()
+                               else :
+                                   st.error("操作失败了")
+                    with col2:
+                        if st.button("🗑️ 删除任务", key=f"del_{task['id']}", type="primary"):
+                            del_res = requests.delete(f"{API_BASE}/tasks/{task['id']}")
+                            if del_res.status_code == 200:
+                                st.rerun()  # 刷新页面
+                            else:
+                                st.error("删除失败")             
+                                              
+
     else:
         st.error("获取任务列表失败。")
 except requests.exceptions.ConnectionError:
