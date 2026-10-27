@@ -74,26 +74,49 @@ try:
                     st.markdown("**细节与规划:**")
                     st.info(task.get("details") or "暂无细节")
                     st.divider()
-                    col1,col2 = st.columns(2)
-
+                    
+                    # 1. 完成和删除按钮
+                    col1, col2 = st.columns(2)
                     with col1:
-
-                        if status != "done" :
-                           if st.button("✅ 标记完成", key=f"done_{task['id']}"):
-                               patch_res = requests.patch(f"{API_BASE}/tasks/{task['id']}/complete")
-
-                               if patch_res.status_code == 200:
-                                   st.rerun()
-                               else :
-                                   st.error("操作失败了")
+                        if status != "done":
+                            if st.button("✅ 标记完成", key=f"done_{task['id']}", use_container_width=True):
+                                res = requests.patch(f"{API_BASE}/tasks/{task['id']}/complete")
+                                if res.status_code == 200:
+                                    st.rerun()
+                                else:
+                                    st.error("操作失败")
                     with col2:
-                        if st.button("🗑️ 删除任务", key=f"del_{task['id']}", type="primary"):
-                            del_res = requests.delete(f"{API_BASE}/tasks/{task['id']}")
-                            if del_res.status_code == 200:
-                                st.rerun()  # 刷新页面
+                        if st.button("🗑️ 删除任务", key=f"del_{task['id']}", type="primary", use_container_width=True):
+                            res = requests.delete(f"{API_BASE}/tasks/{task['id']}")
+                            if res.status_code == 200:
+                                st.rerun()
                             else:
-                                st.error("删除失败")             
-                                              
+                                st.error("删除失败")
+                                
+                    
+                    # 👇 新增：修改任务标题表单 👇
+        
+                    st.markdown("---")
+                    st.markdown("**✏️ 修改任务标题**")
+                     # 使用 st.form 创建一个表单，防止每次输入都刷新页面
+                     
+                    with st.form(key=f"edit_form_{task['id']}"):
+                        new_title = st.text_input("新标题", value=task['title'])
+                        # 表单必须有提交按钮
+                        submit_edit = st.form_submit_button("保存修改")
+                        
+                        if submit_edit:
+                            if not new_title.strip():
+                                st.error("标题不能为空")
+                            else:
+                                # 调用后端的 PUT 接口
+                                payload = {"title": new_title, "status": status}
+                                res = requests.put(f"{API_BASE}/tasks/{task['id']}", json=payload)
+                                if res.status_code == 200:
+                                    st.success("修改成功！")
+                                    st.rerun() # 刷新页面
+                                else:
+                                    st.error("修改失败")
 
     else:
         st.error("获取任务列表失败。")
